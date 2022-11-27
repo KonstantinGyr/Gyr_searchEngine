@@ -1,0 +1,5 @@
+"C:\Program Files\JetBrains\CLion 2021.3.4\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2021.3.4/bin/ninja/win/ninja.exe" -G Ninja C:\Users\Kot\CLionProjects\FinalProject\Gyr_searchEngine
+-- Using the multi-header code from C:/Users/Kot/CLionProjects/FinalProject/Gyr_searchEngine/nlohmann_json/include/
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Users/Kot/CLionProjects/FinalProject/Gyr_searchEngine/cmake-build-debug
