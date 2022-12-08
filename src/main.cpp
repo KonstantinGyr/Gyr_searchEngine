@@ -18,17 +18,27 @@ int main(int argc,char *argv[]) {
         std::cout << converterJson.nameSearchEngine() << std::endl;
     }
     catch (const std::invalid_argument &x) {
-        std::cerr << x.what();
+        std::cerr << x.what()<<std::endl;
     }
     std::cout<<"Download txt documents in folder : "<< p.parent_path().string() + "\\resources" << std::endl;
     std::cout<<"How many responses per query :";
     int resp ;
     std::cin>>resp;
     std::cin.ignore();
-    converterJson.updateConfig(resp);
+    try {
+        converterJson.updateConfig(resp);
+    }
+    catch (const std::invalid_argument &x) {
+        std::cerr << x.what() << std::endl;
+    }
     std::cout<<"Documents uploaded to the database :"<<std::endl;
     for(int i=0;i<converterJson.getNameDocuments().size();++i){
-        std::cout<<"   docId "<<numReq(i)<<" : "<<converterJson.getNameDocuments()[i]<<std::endl;
+        try{
+           std::cout<<"   docId "<<numReq(i)<<" : "<<converterJson.getNameDocuments()[i]<<std::endl;
+        }
+        catch (const std::invalid_argument &x) {
+            std::cerr << x.what()<<std::endl;
+        }
     }
     std::cout<<"How many requests will you have :" ;
     int num;
@@ -42,12 +52,32 @@ int main(int argc,char *argv[]) {
         std::getline(std::cin,req);
         inRequests.emplace_back(req);
     }
-    converterJson.SetRequest(inRequests);
+    try {
+        converterJson.SetRequest(inRequests);
+    }
+    catch (const std::invalid_argument &x) {
+        std::cerr << x.what() << std::endl;
+    }
     std::cout<<std::endl;
     InvertedIndex invertedIndex;
-    invertedIndex.UpdateDocumentBase(converterJson.GetTextDocuments());
+    try {
+        invertedIndex.UpdateDocumentBase(converterJson.GetTextDocuments());
+    }
+    catch (const std::invalid_argument &x) {
+        std::cerr << x.what() << std::endl;
+    }
     SearchServer searchServer(invertedIndex);
-    converterJson.putAnswers(searchServer.search(converterJson.GetRequests(),converterJson.GetResponsesLimit()));
-    converterJson.printAnswers();
+    try {
+        converterJson.putAnswers(searchServer.search(converterJson.GetRequests(),
+                                                     converterJson.GetResponsesLimit()));
+    }
+    catch (const std::invalid_argument &x) {
+        std::cerr << x.what() << std::endl;
+    }
+    try {
+        converterJson.printAnswers();
+    }catch (const std::invalid_argument &x) {
+        std::cerr << x.what() << std::endl;
+    }
     return 0;
 }

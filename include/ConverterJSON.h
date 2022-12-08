@@ -24,7 +24,7 @@ public:
 
     std::vector<std::string> GetRequests()const;
 
-    void putAnswers(std::vector<std::vector<RelativeIndex>>answers)const;
+    void putAnswers(const std::vector<std::vector<RelativeIndex>>&answers)const;
 
     void printAnswers()const;
 

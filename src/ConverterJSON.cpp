@@ -59,12 +59,18 @@ std::vector<std::string>  ConverterJSON::GetTextDocuments()const {
     std::vector<std::string>textDocuments;
     nlohmann::json config;
     std::ifstream file(mainPath + "\\" + "config.json");
+    if(!file.is_open()){
+        throw std::invalid_argument("method 'ConverterJSON::GetTextDocuments' failed to open 'config.json' file ");
+    }
     file >> config;
+    file.close();
     for(const auto &item:config["files"]){
         std::string fullText;
         std::string docName = item;
         std::ifstream doc(mainPath + "\\resources\\" + docName);
-        if(!doc.is_open())std::cout<<docName<<" : is invalid address";
+        if(!doc.is_open()){
+            throw std::invalid_argument("method 'ConverterJSON::GetTextDocuments' failed to open 'resources' folder ");
+        }
         doc.seekg(0);
         while (!doc.eof()){
             std::string partText;
@@ -74,7 +80,7 @@ std::vector<std::string>  ConverterJSON::GetTextDocuments()const {
         textDocuments.push_back(fullText);
         doc.close();
     }
-    file.close();
+
     return textDocuments;
 }
 /**
@@ -84,11 +90,14 @@ std::vector<std::string> ConverterJSON::getNameDocuments()const {
     std::vector<std::string>nameVec;
     nlohmann::json config;
     std::ifstream file(mainPath + "\\" + "config.json");
+    if(!file.is_open()){
+        throw std::invalid_argument("method 'ConverterJSON::getNameDocuments' failed to open 'config.json' file ");
+    }
     file >> config;
+    file.close();
     for(const auto &item:config["files"]){
         nameVec.emplace_back(item);
     }
-    file.close();
     return nameVec;
 }
 /**
@@ -97,6 +106,9 @@ std::vector<std::string> ConverterJSON::getNameDocuments()const {
 int ConverterJSON::GetResponsesLimit()const {
     nlohmann::json config;
     std::ifstream file(mainPath + "\\" + "config.json");
+    if(!file.is_open()){
+        throw std::invalid_argument("method 'ConverterJSON::GetResponsesLimit' failed to open 'config.json' file ");
+    }
     file>>config;
     file.close();
     return (config["config"]["max_responses"]);
@@ -108,13 +120,15 @@ int ConverterJSON::GetResponsesLimit()const {
 std::vector<std::string> ConverterJSON::GetRequests()const  {
     nlohmann::json requests;
     std::ifstream file (mainPath+"\\"+"requests.json");
+    if(!file.is_open()){
+        throw std::invalid_argument("method 'ConverterJSON::GetRequests' failed to open 'requests.json' file ");
+    }
     file>>requests;
+    file.close();
     std::vector<std::string>output;
-    std::string w;
     for(auto &words:requests["requests"]){
         output.push_back(words);
     }
-    file.close();
     return output;
 }
 /**
@@ -127,6 +141,9 @@ void ConverterJSON::SetRequest(std::vector<std::string>inVec){
         requests["requests"].emplace_back(item);
     }
     std::ofstream file(mainPath + "\\" + "requests.json");
+    if(!file.is_open()){
+        throw std::invalid_argument("method 'ConverterJSON::SetRequest' failed to open 'requests.json' file ");
+    }
     file<<requests;
     file.close();
 }
@@ -139,8 +156,8 @@ auto numReq(size_t x){
 /**
 * Положить в файл answers.json результаты поисковых запросов
 */
-void ConverterJSON::putAnswers(std::vector <std::vector< RelativeIndex>>answers)const {
-    std::ofstream ans(mainPath + "\\" + "answers.json");
+void ConverterJSON::putAnswers(const std::vector <std::vector< RelativeIndex>>&answers)const {
+
     nlohmann::json mainJSON;
     nlohmann::json answersJSON;
     nlohmann::json reqJSON;
@@ -172,7 +189,11 @@ void ConverterJSON::putAnswers(std::vector <std::vector< RelativeIndex>>answers)
         count++;
     }
     mainJSON["answers"] = answersJSON;
-    ans<<mainJSON;
+    std::ofstream ans(mainPath + "\\" + "answers.json");
+    if(!ans.is_open()){
+        throw std::invalid_argument("method 'ConverterJSON::putAnswers' failed to open 'answers.json' file ");
+    }
+    ans << mainJSON;
     ans.close();
 }
 
@@ -180,9 +201,13 @@ void ConverterJSON::putAnswers(std::vector <std::vector< RelativeIndex>>answers)
  * Метод печатает файл answers.json
  */
 void ConverterJSON::printAnswers()const {
-    std::ifstream file(mainPath + "\\" + "answers.json");
     nlohmann::json answers;
+    std::ifstream file(mainPath + "\\" + "answers.json");
+    if(!file.is_open()){
+        throw std::invalid_argument("method 'ConverterJSON::printAnswers' failed to open 'answers.json' file ");
+    }
     file>>answers;
+    file.close();
     size_t count = 1;
     for(const auto &req:answers["answers"]){
         std::cout<<"request "<<numReq(count)<<std::endl;
@@ -200,7 +225,7 @@ void ConverterJSON::printAnswers()const {
         }
         count++;
     }
-    file.close();
+
 }
 
 
