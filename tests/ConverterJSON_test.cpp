@@ -1,21 +1,35 @@
+#include <string>
+#include <filesystem>
+#include <fstream>
 #include "ConverterJSON.h"
 #include "gtest/gtest.h"
 
-ConverterJSON converter("C:\\Users\\Kot\\CLionProjects\\FinalProject\\Gyr_searchEngine");
+std::string p (){
+    std::string path = std::filesystem::current_path().string();
+    while (true){
+        if( path.back() != '\\'){
+            path.pop_back();
+        }
+        else{
+            path.pop_back();
+            break;
+        }
+    }
+    return path;
+}
+
+ConverterJSON converter(p());
 
 TEST(ConverterJSON, readConfig) {
     std::string str = "Gyr_searchEngine V1.0";
     ASSERT_EQ(converter.nameSearchEngine(), str);
 }
 
-TEST(ConverterJSON, TestPrintAnswers) {
-    converter.printAnswers();
-    ASSERT_EQ(0,0);
-}
-
 TEST(ConverterJSON, getResponsesLimit) {
-
-    ASSERT_EQ(converter.GetResponsesLimit(), 5);
+    converter.updateConfig(5);
+    int expected = 5;
+    int result = converter.GetResponsesLimit();
+    ASSERT_EQ(result, expected);
 }
 
 TEST(ConverterJSON, getRequests) {
@@ -26,7 +40,9 @@ TEST(ConverterJSON, getRequests) {
                 "language",
                 "C++"
             };
-    ASSERT_EQ(converter.GetRequests(), expected);
+    converter.SetRequest(expected);
+    std::vector<std::string>result = converter.GetRequests();
+    ASSERT_EQ(result , expected);
 }
 
 TEST(ConverterJSON, getFiles) {
@@ -52,5 +68,7 @@ TEST(ConverterJSON, putAnswers) {
             }
     };
     converter.putAnswers(expected);
+    converter.printAnswers();
     ASSERT_EQ(0,0);
 }
+

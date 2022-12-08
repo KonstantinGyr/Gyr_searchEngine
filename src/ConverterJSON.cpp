@@ -2,11 +2,29 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <filesystem>
 #include "SearchServer.h"
 #include "nlohmann/json.hpp"
-#include <filesystem>
+#include "ConverterJSON.h"
 
+/**
+ * Метод обновляет config.json
+ */
+void ConverterJSON::updateConfig(int n){
+    nlohmann::json confFile;
+    maxResponses = n;
+    confFile["config"]["name"] = "Gyr_searchEngine";
+    confFile["config"]["version"] = "1.0";
+    confFile["config"]["max_responses"] = maxResponses;
+    for(auto &item:std::filesystem::directory_iterator(mainPath + "\\" + "resources")){
+        if(item.is_regular_file()&&item.path().extension().compare(".txt") == 0) {
+            confFile["files"].emplace_back(item.path().filename());
+        }
+    }
+    std::ofstream file(mainPath +"\\" + "config.json");
+    file<<confFile;
+    file.close();
+}
 /**
  *Метод проверяет configfile на валидность
  * @return название поискового движка и его версию
@@ -26,9 +44,10 @@ std::string ConverterJSON::nameSearchEngine() {
     name = config["config"]["name"];
     version =  config["config"]["version"];
     maxResponses = config["config"]["max_responses"];
-    for(auto &address:config["files"]){
+    for(const auto &address:config["files"]){
         files.push_back(address);
     }
+    file.close();
     return name + " V" += version;
 }
 
@@ -36,16 +55,16 @@ std::string ConverterJSON::nameSearchEngine() {
 * Метод получения содержимого файлов
 * @return Возвращает список с содержимым файлов перечисленных в config.json
 */
-std::vector <std::string> ConverterJSON::GetTextDocuments(){
+std::vector<std::string>  ConverterJSON::GetTextDocuments()const {
     std::vector<std::string>textDocuments;
     nlohmann::json config;
     std::ifstream file(mainPath + "\\" + "config.json");
     file >> config;
-    for( auto &source:config["files"]){
+    for(const auto &item:config["files"]){
         std::string fullText;
-        std::string address = source;
-        std::ifstream doc(mainPath + "\\" + address);
-        if(!doc.is_open())std::cout<<source<<": is invalid address";
+        std::string docName = item;
+        std::ifstream doc(mainPath + "\\resources\\" + docName);
+        if(!doc.is_open())std::cout<<docName<<" : is invalid address";
         doc.seekg(0);
         while (!doc.eof()){
             std::string partText;
@@ -55,25 +74,38 @@ std::vector <std::string> ConverterJSON::GetTextDocuments(){
         textDocuments.push_back(fullText);
         doc.close();
     }
+    file.close();
     return textDocuments;
 }
-
+/**
+ * @return возвращает имена документов
+ */
+std::vector<std::string> ConverterJSON::getNameDocuments()const {
+    std::vector<std::string>nameVec;
+    nlohmann::json config;
+    std::ifstream file(mainPath + "\\" + "config.json");
+    file >> config;
+    for(const auto &item:config["files"]){
+        nameVec.emplace_back(item);
+    }
+    file.close();
+    return nameVec;
+}
 /**
 * Метод считывает поле max_responses для определения предельного
 */
-int ConverterJSON::GetResponsesLimit() {
+int ConverterJSON::GetResponsesLimit()const {
     nlohmann::json config;
     std::ifstream file(mainPath + "\\" + "config.json");
     file>>config;
     file.close();
     return (config["config"]["max_responses"]);
 }
-
 /**
 * Метод получения запросов из файла requests.json
 * @return возвращает список запросов из файла requests.json
 */
-std::vector <std::string> ConverterJSON::GetRequests(){
+std::vector<std::string> ConverterJSON::GetRequests()const  {
     nlohmann::json requests;
     std::ifstream file (mainPath+"\\"+"requests.json");
     file>>requests;
@@ -85,17 +117,29 @@ std::vector <std::string> ConverterJSON::GetRequests(){
     file.close();
     return output;
 }
+/**
+ * Метод загрузки запросов в requests.json
+ * @param inVec принимает вектор запросов из main
+ */
+void ConverterJSON::SetRequest(std::vector<std::string>inVec){
+    nlohmann::json requests;
+    for(auto &item:inVec){
+        requests["requests"].emplace_back(item);
+    }
+    std::ofstream file(mainPath + "\\" + "requests.json");
+    file<<requests;
+    file.close();
+}
 
-std::string numReq(size_t x){
+auto numReq(size_t x){
     if(x>99)return std::to_string(x);
     if(x>9)return "0"+std::to_string(x);
     return "00" + std::to_string(x);
 }
-
 /**
 * Положить в файл answers.json результаты поисковых запросов
 */
-void ConverterJSON::putAnswers(std::vector <std::vector< RelativeIndex>>answers){
+void ConverterJSON::putAnswers(std::vector <std::vector< RelativeIndex>>answers)const {
     std::ofstream ans(mainPath + "\\" + "answers.json");
     nlohmann::json mainJSON;
     nlohmann::json answersJSON;
@@ -104,7 +148,7 @@ void ConverterJSON::putAnswers(std::vector <std::vector< RelativeIndex>>answers)
     nlohmann::json pairJSON;
     std::vector< RelativeIndex>relevance;
     size_t count = 1;
-    for(auto &answer:answers){
+    for(const auto &answer:answers){
         if(answer.empty()){
             reqJSON["result"] = "false";
         }
@@ -114,13 +158,14 @@ void ConverterJSON::putAnswers(std::vector <std::vector< RelativeIndex>>answers)
             reqJSON["rank"] = answer.front().rank;
         }
         else {
-            for(auto &xPair:answer){
+            for(const auto &xPair:answer){
                 pairJSON["docId"] = xPair.doc_id;
                 pairJSON["rank"] = xPair.rank;
                 relevanceJSON += (pairJSON);
             }
             reqJSON["result"] = "true";
             reqJSON["relevance"] = relevanceJSON;
+            relevanceJSON.clear();
         }
         answersJSON["request " + numReq(count)] = reqJSON;
         reqJSON.clear();
@@ -131,27 +176,31 @@ void ConverterJSON::putAnswers(std::vector <std::vector< RelativeIndex>>answers)
     ans.close();
 }
 
-void ConverterJSON::printAnswers(){
+/**
+ * Метод печатает файл answers.json
+ */
+void ConverterJSON::printAnswers()const {
     std::ifstream file(mainPath + "\\" + "answers.json");
     nlohmann::json answers;
     file>>answers;
     size_t count = 1;
-    for(auto &req:answers["answers"]){
+    for(const auto &req:answers["answers"]){
         std::cout<<"request "<<numReq(count)<<std::endl;
         if(req.count("relevance")) {
             std::cout<<"  relevance : "<< std::endl;
-            for (auto &ans: req["relevance"]){
+            for (const auto &ans: req["relevance"]){
                 std::cout<<"      docId : "<<ans["docId"]<<", "<<"rank : "<<ans["rank"]<<", "<<std::endl;
             }
         }else{
             if(req["result"] == "true") {
-                std::cout << "    result : " << req["result"] << std::endl;
                 std::cout << "    docId : "<<req["docId"]<<", "<<"rank : "<<req["rank"]<<", "<<std::endl;
             }else{
-                std::cout << "  result : " << req["result"] << std::endl;
+                std::cout << "    Documents not found" << std::endl;
             }
         }
         count++;
     }
+    file.close();
 }
+
 

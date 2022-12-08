@@ -1,23 +1,34 @@
+#include <filesystem>
 #include "SearchServer.h"
+#include "ConverterJSON.h"
 #include "gtest/gtest.h"
 
-TEST(SearchEngine, TestProcessing) {
-    SearchServer serv;
-    std::vector<std::string>request =
-            {            };
-    ASSERT_EQ(true, true);
-}
-
-TEST(SearchEngine, search2) {
-    ASSERT_EQ(true, true);
-}
-
-TEST(SearchEngine, search3) {
-    ASSERT_EQ(true, true);
-}
 
 using namespace std;
 
+void sortVec(vector<Entry>&inVec){
+    for (int i = 0; i < inVec.size() - 1; i++) {
+        int min = i;
+        for (int j = i + 1; j < inVec.size(); j++) {
+            if (inVec[j].doc_id < inVec[min].doc_id)min = j;
+        }
+        swap(inVec[i], inVec[min]);
+    }
+}
+
+string path (){
+    string p = std::filesystem::current_path().string();
+    while (true){
+       if( p.back() != '\\'){
+           p.pop_back();
+        }
+       else{
+           p.pop_back();
+           break;
+       }
+    }
+    return p;
+}
 
 void TestInvertedIndexFunctionality(
         const vector<string>& docs,
@@ -30,8 +41,10 @@ void TestInvertedIndexFunctionality(
     idx.UpdateDocumentBase(docs);
     for(auto& request : requests) {
         std::vector<Entry> word_count = idx.GetWordCount(request);
+        if(word_count.size()>1)sortVec(word_count);
         result.push_back(word_count);
     }
+
     ASSERT_EQ(result, expected);
 }
 TEST(TestCaseInvertedIndex, TestBasic) {
@@ -107,7 +120,9 @@ TEST(TestCaseSearchServer, TestSimple) {
     InvertedIndex idx;
     idx.UpdateDocumentBase(docs);
     SearchServer srv(idx);
-    std::vector<vector<RelativeIndex>> result = srv.search(request);
+    ConverterJSON conv(path());
+    std::vector<vector<RelativeIndex>> result = srv.search(request,conv.GetResponsesLimit());
+    conv.putAnswers(result);
     ASSERT_EQ(result, expected);
 }
 TEST(TestCaseSearchServer, TestTop5) {
@@ -148,6 +163,9 @@ TEST(TestCaseSearchServer, TestTop5) {
     InvertedIndex idx;
     idx.UpdateDocumentBase(docs);
     SearchServer srv(idx);
-    std::vector<vector<RelativeIndex>> result = srv.search(request);
+    ConverterJSON conv(path());
+    std::vector<vector<RelativeIndex>> result = srv.search(request,conv.GetResponsesLimit());
+    conv.putAnswers(result);
+    conv.printAnswers();
     ASSERT_EQ(result, expected);
 }

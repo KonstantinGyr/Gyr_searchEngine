@@ -1,11 +1,11 @@
+#ifndef SEARCHENGINE_INVERTEDINDEX_H
+#define SEARCHENGINE_INVERTEDINDEX_H
+
 #include <map>
 #include <string>
 #include <vector>
 #include <mutex>
 #include <thread>
-
-#ifndef SEARCHENGINE_INVERTEDINDEX_H
-#define SEARCHENGINE_INVERTEDINDEX_H
 
 struct Entry {
     size_t doc_id, count;
@@ -19,21 +19,17 @@ struct Entry {
 class InvertedIndex {
 private:
     // список содержимого документов
-    std::map<std::string, std::vector<Entry>> freq_dictionary;
+    std::map<std::string, std::vector<Entry>> freq_dictionary ;
     std::vector<std::string> docs;
 
 public:
-    InvertedIndex() ;
+    InvertedIndex() = default ;
 
-    std::map<std::string, std::vector<Entry>> getDictionary();
-
-    void setDict(std::string word ,int numDoc);
+    static void setDict(const std::string& word , int numDoc);
 
     void UpdateDocumentBase(std::vector<std::string> input_docs);
 
-    std::vector<Entry> GetWordCount(const std::string& word);
-
-    void printDict ();
+    std::vector<Entry> GetWordCount(const std::string& word)const;
 };
 
 

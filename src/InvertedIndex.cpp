@@ -5,47 +5,45 @@
 std::map<std::string, std::vector<Entry>> tempMap;// временный частотный словарь
 std::mutex accessMap;
 
-void  parsingText(std::string text,int count){
-    InvertedIndex ind ;
+/**
+ * Функция парсит документ из потока
+ */
+void parsingText(std::string text,int count){
     std::string word;
-   /* for(auto item : text){
-        if(item != ' ')word+=item;
-        if(item == ' ' && !word.empty()){
-            ind.setDict(word,count);
-            word.clear();
-        }
-    }*/
     for(int i = 0;i<text.length();i++){
         if(text[i] == ' '){
-            ind.setDict(word,count);
+            InvertedIndex::setDict(word,count);
             word.clear();
             continue;
         }
         word.push_back(text[i]);
         if(i == text.length()-1){
-            ind.setDict(word,count);
+            InvertedIndex::setDict(word,count);
         }
     }
 }
-InvertedIndex::InvertedIndex() = default;
-
-std::map<std::string, std::vector<Entry>> InvertedIndex::getDictionary() {
-    return freq_dictionary;
-}
-
-void InvertedIndex::setDict(std::string word, int numDoc) {
+/**
+ * Метод принимает слово, номер документа и заполняет временный частотный словарь
+ * @param word
+ * @param numDoc
+ */
+void InvertedIndex::setDict(const std::string& word, int numDoc) {
     Entry entry{};
     std::vector<Entry> vecEntry;
     std::pair<std::string,std::vector<Entry>> xPair;
     accessMap.lock();
     if(tempMap.count(word)){
-        if(tempMap.at(word).back().doc_id == numDoc){
-            tempMap.at(word).back().count ++;
+        bool ok = false;
+        for(auto &item:tempMap.at(word)){
+            if(item.doc_id == numDoc){
+                item.count++;
+                ok = true;
+            }
         }
-        else{
+        if(!ok){
             entry.doc_id = numDoc;
             entry.count = 1;
-            tempMap.at(word).push_back(entry);
+            tempMap.at(word).emplace_back(entry);
         }
     } else{
         entry.doc_id = numDoc;
@@ -59,40 +57,30 @@ void InvertedIndex::setDict(std::string word, int numDoc) {
 }
 
 /**
-* Обновить или заполнить базу документов, по которой будем совершать
-поиск
+* Обновить или заполнить базу документов, по которой будем совершать поиск
+* Метод открывает каждый документ в отдельном потоке и индексирует его
 * @param texts_input содержимое документов
 */
-void InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs) {
+void InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs){
     docs = std::move(input_docs);
+    std::vector<std::thread>threads;
     int countDoc = 0;
-    for(auto text:docs){
-        std::thread streamText( parsingText, text,countDoc);
-        streamText.join();
+    for(const auto &text:docs) {
+        threads.emplace_back( parsingText, text, countDoc);
         countDoc++;
     }
-    freq_dictionary = std::move(tempMap);
+    for(auto &stream:threads){
+        stream.join();
+    }
+  freq_dictionary = std::move(tempMap);//перемещает содержимое временного словаря
 }
-
 /**
  * Метод определяет количество вхождений слова word в загруженной базе документов
 * @param word слово, частоту вхождений которого необходимо определить
 * @return возвращает подготовленный список с частотой слов
 */
-std::vector<Entry> InvertedIndex::GetWordCount(const std::string &word){
+std::vector<Entry> InvertedIndex::GetWordCount(const std::string &word)const{
     std::vector<Entry>vec;
     if(freq_dictionary.count(word))return freq_dictionary.at(word);
-    else return vec ;
-}
-
-void InvertedIndex::printDict (){
-    accessMap.lock();
-    for(auto &item:freq_dictionary){
-        std::cout<<item.first<<" : ";
-        for( auto &x:item.second){
-            std::cout<<"docID : "<<x.doc_id<<" - "<<x.count<<" ; ";
-        }
-        std::cout<<std::endl;
-    }
-    accessMap.unlock();
+    return vec ;
 }

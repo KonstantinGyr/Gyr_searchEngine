@@ -1,12 +1,12 @@
+#ifndef SEARCHENGINE_SEARCHSERVER_H
+#define SEARCHENGINE_SEARCHSERVER_H
+
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <map>
 #include "InvertedIndex.h"
-#include "ConverterJSON.h"
-
-#ifndef SEARCHENGINE_SEARCHSERVER_H
-#define SEARCHENGINE_SEARCHSERVER_H
+//#include "ConverterJSON.h"
 
 struct RelativeIndex{
     size_t doc_id;
@@ -30,15 +30,17 @@ InvertedIndex,
 */
     SearchServer() = default;
 
-    SearchServer(InvertedIndex &idx) : _index(idx) {};
+    explicit SearchServer(InvertedIndex &idx) : _index(idx) {};
 
-    int counter(std::string word);
+    size_t counter(const std::string& word);
 
-    int countInDoc(std::string word, size_t docId);
+    size_t countInDoc(const std::string& word, size_t docId);
 
-    void processingRequest(std::vector<std::string>&request);
+    void processingRequest( std::vector<std::string>&request);
 
-    std::vector<std::vector<RelativeIndex>> search(const std::vector<std::string> &queries_input);
+    auto creatVec(const std::vector<size_t> &listDocs,const std::vector<std::string> &request);
+
+    std::vector<std::vector<RelativeIndex>> search(const std::vector<std::string> &queries_input,int resp);
 };
 
 #endif //SEARCHENGINE_SEARCHSERVER_H

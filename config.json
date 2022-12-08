@@ -1,15 +1,1 @@
-{
-  "config":
-  {
-    "name": "Gyr_searchEngine",
-    "version": "1.0",
-    "max_responses": 5
-  },
-  "files":
-  [
-    "resources/file001.txt",
-    "resources/file002.txt",
-    "resources/file003.txt",
-    "resources/file004.txt"
-  ]
-}
+{"config":{"max_responses":5,"name":"Gyr_searchEngine","version":"1.0"},"files":["File01.txt","File02.txt","File03.txt","File04.txt","File05.txt"]}
