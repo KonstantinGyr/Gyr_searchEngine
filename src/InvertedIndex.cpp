@@ -1,5 +1,3 @@
-//#include <iostream>
-//#include <utility>
 #include "InvertedIndex.h"
 
 std::map<std::string, std::vector<Entry>> tempMap;// временный частотный словарь
