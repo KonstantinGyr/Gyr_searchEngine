@@ -3,10 +3,11 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
+#include <cassert>
 #include <algorithm>
 #include <map>
 #include "InvertedIndex.h"
-//#include "ConverterJSON.h"
 
 struct RelativeIndex{
     size_t doc_id;

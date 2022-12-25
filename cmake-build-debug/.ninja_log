@@ -35,3 +35,13 @@
 8	16813	6922061615887608	src/CMakeFiles/Gyr_searchEngine.dir/SearchServer.cpp.obj	d2d29a6494c710ee
 13	25715	6922061709179296	src/CMakeFiles/Gyr_searchEngine.dir/ConverterJSON.cpp.obj	1cec45ccba7b135a
 25715	35406	6922061807365180	../Gyr_searchEngine.exe	d7e20f0158a36499
+8	6010	6936776582198903	../Gyr_searchEngine.exe	d7e20f0158a36499
+1777	41320	6936881749542830	src/CMakeFiles/Gyr_searchEngine.dir/SearchServer.cpp.obj	d2d29a6494c710ee
+9	6115	6936886484532677	src/CMakeFiles/Gyr_searchEngine.dir/main.cpp.obj	d029962ba99bfbf7
+7	12081	6936886544066270	src/CMakeFiles/Gyr_searchEngine.dir/ConverterJSON.cpp.obj	1cec45ccba7b135a
+12081	17992	6936886603295237	../Gyr_searchEngine.exe	d7e20f0158a36499
+8	172930	6936892364423555	src/CMakeFiles/Gyr_searchEngine.dir/SearchServer.cpp.obj	d2d29a6494c710ee
+11	173479	6936892363543503	src/CMakeFiles/Gyr_searchEngine.dir/main.cpp.obj	d029962ba99bfbf7
+12	173575	6936892364053529	src/CMakeFiles/Gyr_searchEngine.dir/InvertedIndex.cpp.obj	b4b406b0c1c60adf
+10	228140	6936892938945625	src/CMakeFiles/Gyr_searchEngine.dir/ConverterJSON.cpp.obj	1cec45ccba7b135a
+228140	234922	6936893006963115	../Gyr_searchEngine.exe	d7e20f0158a36499

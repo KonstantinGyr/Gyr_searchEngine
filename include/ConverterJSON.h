@@ -1,9 +1,12 @@
 #ifndef SEARCHENGINE_CONVERTERJSON_H
 #define SEARCHENGINE_CONVERTERJSON_H
-
-#include<string>
-#include<vector>
-#include"SearchServer.h"
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+#include "SearchServer.h"
+#include "nlohmann/json.hpp"
 
 class ConverterJSON {
     const std::string mainPath;
