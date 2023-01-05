@@ -1,7 +1,7 @@
 #include "ConverterJSON.h"
 
 /**
- * счетчик слова из запроса во всех документах
+ * СЃС‡РµС‚С‡РёРє СЃР»РѕРІР° РёР· Р·Р°РїСЂРѕСЃР° РІРѕ РІСЃРµС… РґРѕРєСѓРјРµРЅС‚Р°С…
  */
 size_t SearchServer::counter(const std::string& word) {
     size_t sum =0;
@@ -12,7 +12,7 @@ size_t SearchServer::counter(const std::string& word) {
 }
 
 /**
- * счетчик слова из запроса в одном документе
+ * СЃС‡РµС‚С‡РёРє СЃР»РѕРІР° РёР· Р·Р°РїСЂРѕСЃР° РІ РѕРґРЅРѕРј РґРѕРєСѓРјРµРЅС‚Рµ
  */
 size_t SearchServer::countInDoc(const std::string& word,size_t docId) {
     for(auto &item:_index.GetWordCount(word)){
@@ -39,11 +39,11 @@ std::vector<std::string>parsingRequest(std::string str){
 }
 
 /**
- * Функция обработки запроса
+ * Р¤СѓРЅРєС†РёСЏ РѕР±СЂР°Р±РѕС‚РєРё Р·Р°РїСЂРѕСЃР°
  * @param request
  */
 void SearchServer::processingRequest( std::vector<std::string>&request){
-    std::vector<std::string>uniqWords;//создаем вектор уникальных слов
+    std::vector<std::string>uniqWords;//СЃРѕР·РґР°РµРј РІРµРєС‚РѕСЂ СѓРЅРёРєР°Р»СЊРЅС‹С… СЃР»РѕРІ
     uniqWords = {request[0]};
     for (const auto &word: request) {
         bool ok = true;
@@ -52,13 +52,13 @@ void SearchServer::processingRequest( std::vector<std::string>&request){
         }
         if (ok)uniqWords.emplace_back(word);
     }
-        //сортируем по возрастанию
+        //СЃРѕСЂС‚РёСЂСѓРµРј РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ
     for (int i = 0; i < uniqWords.size(); i++) {
         int minInd = i;
         for (int j = i + 1; j < uniqWords.size(); j++) {
             if (counter(uniqWords[j]) == 0) {
-                //если документов не найдено удаляем слово из запроса
-                std::cout << "On request : '" << uniqWords[j] << "' no documents found !" << std::endl;
+                //РµСЃР»Рё РґРѕРєСѓРјРµРЅС‚РѕРІ РЅРµ РЅР°Р№РґРµРЅРѕ СѓРґР°Р»СЏРµРј СЃР»РѕРІРѕ РёР· Р·Р°РїСЂРѕСЃР°
+                std::cout << "This word : " << uniqWords[j] << " no documents found !" << std::endl;
                 uniqWords.erase(uniqWords.begin() + j);
                 j--;
                 continue;
@@ -73,7 +73,7 @@ void SearchServer::processingRequest( std::vector<std::string>&request){
 }
 
 auto SearchServer::creatVec(const std::vector<size_t> &listDocs,const std::vector<std::string> &request){
-    //вектор документов с их абсолютной релевантностью
+    //РІРµРєС‚РѕСЂ РґРѕРєСѓРјРµРЅС‚РѕРІ СЃ РёС… Р°Р±СЃРѕР»СЋС‚РЅРѕР№ СЂРµР»РµРІР°РЅС‚РЅРѕСЃС‚СЊСЋ
     std::vector<std::pair<size_t, int>>absRelDocs;
     for (const auto &item: listDocs) {
         size_t countRel = 0;
@@ -82,7 +82,7 @@ auto SearchServer::creatVec(const std::vector<size_t> &listDocs,const std::vecto
         }
         absRelDocs.emplace_back(item, countRel);
     }
-    for (int i = 0; i < absRelDocs.size(); ++i) {  //сортируем вектор по убыванию
+    for (int i = 0; i < absRelDocs.size(); ++i) {  //СЃРѕСЂС‚РёСЂСѓРµРј РІРµРєС‚РѕСЂ РїРѕ СѓР±С‹РІР°РЅРёСЋ
         int maxInd = i;
         for (int j = i + 1; j < absRelDocs.size(); ++j) {
             if (absRelDocs[j].second > absRelDocs[maxInd].second) {
@@ -91,7 +91,7 @@ auto SearchServer::creatVec(const std::vector<size_t> &listDocs,const std::vecto
         }
         std::swap(absRelDocs[i], absRelDocs[maxInd]);
     }
-    std::vector<RelativeIndex> indOneReq;//вектор документов с индексами релевантности
+    std::vector<RelativeIndex> indOneReq;//РІРµРєС‚РѕСЂ РґРѕРєСѓРјРµРЅС‚РѕРІ СЃ РёРЅРґРµРєСЃР°РјРё СЂРµР»РµРІР°РЅС‚РЅРѕСЃС‚Рё
     for (const auto &item: absRelDocs) {
         RelativeIndex relativeIndex{};
         relativeIndex.doc_id = item.first;
@@ -102,27 +102,27 @@ auto SearchServer::creatVec(const std::vector<size_t> &listDocs,const std::vecto
 }
 
 /**
-* Метод обработки поисковых запросов
-* @param queries_input поисковые запросы взятые из файла
+* РњРµС‚РѕРґ РѕР±СЂР°Р±РѕС‚РєРё РїРѕРёСЃРєРѕРІС‹С… Р·Р°РїСЂРѕСЃРѕРІ
+* @param queries_input РїРѕРёСЃРєРѕРІС‹Рµ Р·Р°РїСЂРѕСЃС‹ РІР·СЏС‚С‹Рµ РёР· С„Р°Р№Р»Р°
 requests.json
-* @return возвращает отсортированный список релевантных ответов для
-заданных запросов
+* @return РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Р№ СЃРїРёСЃРѕРє СЂРµР»РµРІР°РЅС‚РЅС‹С… РѕС‚РІРµС‚РѕРІ РґР»СЏ
+Р·Р°РґР°РЅРЅС‹С… Р·Р°РїСЂРѕСЃРѕРІ
 */
 std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<std::string>& queries_input,int resp){
-    //парсим запросы
+    //РїР°СЂСЃРёРј Р·Р°РїСЂРѕСЃС‹
     for(auto &str:queries_input) {
-        vecRequests.emplace_back(parsingRequest(str));//создаем вектор с запросами
+        vecRequests.emplace_back(parsingRequest(str));//СЃРѕР·РґР°РµРј РІРµРєС‚РѕСЂ СЃ Р·Р°РїСЂРѕСЃР°РјРё
     }
     ConverterJSON conv;
         for(auto &request:vecRequests)
-        {       //(обрабатываем вектор запроса: оставляем уникальные слова и сортируем их по возрастанию)
+        {       //(РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј РІРµРєС‚РѕСЂ Р·Р°РїСЂРѕСЃР°: РѕСЃС‚Р°РІР»СЏРµРј СѓРЅРёРєР°Р»СЊРЅС‹Рµ СЃР»РѕРІР° Рё СЃРѕСЂС‚РёСЂСѓРµРј РёС… РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ)
             processingRequest(request);
-            std::vector<size_t> listDocs;//список документов
+            std::vector<size_t> listDocs;//СЃРїРёСЃРѕРє РґРѕРєСѓРјРµРЅС‚РѕРІ
             bool full = false;
-            for(const auto & i : request)//проходим по запросу
+            for(const auto & i : request)//РїСЂРѕС…РѕРґРёРј РїРѕ Р·Р°РїСЂРѕСЃСѓ
             {
                 for (const auto &item: _index.GetWordCount(i))
-                {                                       //ищем в индексе слово из запроса
+                {                                       //РёС‰РµРј РІ РёРЅРґРµРєСЃРµ СЃР»РѕРІРѕ РёР· Р·Р°РїСЂРѕСЃР°
                     bool ok = false;
                     for(const auto &num:listDocs) {
                         if(item.doc_id == num)ok = true;
@@ -136,7 +136,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
                 }
                 if(full)break;
             }
-            //вектор документов с относительной релевантностью одного запроса
+            //РІРµРєС‚РѕСЂ РґРѕРєСѓРјРµРЅС‚РѕРІ СЃ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕР№ СЂРµР»РµРІР°РЅС‚РЅРѕСЃС‚СЊСЋ РѕРґРЅРѕРіРѕ Р·Р°РїСЂРѕСЃР°
             std::vector<RelativeIndex> indOneReq = creatVec(listDocs,request);
             vecRelativeIndex.emplace_back(indOneReq);
         }

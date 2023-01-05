@@ -1,4 +1,6 @@
 #include "InvertedIndex.h"
+#include <sstream>
+#include <iostream>
 
 std::map<std::string, std::vector<Entry>> tempMap;// временный частотный словарь
 std::mutex accessMap;
@@ -7,18 +9,23 @@ std::mutex accessMap;
  * ‘ункци€ парсит документ из потока
  */
 void parsingText(std::string text,int count){
-    std::string word;
-    for(int i = 0;i<text.length();i++){
-        if(text[i] == ' '){
-            InvertedIndex::setDict(word,count);
-            word.clear();
-            continue;
-        }
-        word.push_back(text[i]);
-        if(i == text.length()-1){
-            InvertedIndex::setDict(word,count);
-        }
-    }
+   std::string line;
+   std::stringstream stringStream(text);
+   while(std::getline(stringStream,line)){
+    //   InvertedIndex::setDict(line,count);
+      std::size_t  pos,prev = 0;
+       while ((pos = line.find_first_of(", .:-\";!?",prev)) != std::string::npos){
+           if(pos > prev){
+               std::string word = line.substr(prev,pos - prev);
+               InvertedIndex::setDict(word,count);
+               prev = pos + 1;
+           }
+           else if(pos == prev)prev = pos + 1;
+       }
+       if(prev < line.length()){
+           InvertedIndex::setDict(line.substr(prev,std::string::npos),count);
+       }
+   }
 }
 /**
  * ћетод принимает слово, номер документа и заполн€ет временный частотный словарь
