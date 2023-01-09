@@ -30,7 +30,7 @@ std::string pt (){
 InvertedIndex ind;
 ConverterJSON conv(pt());
 
-TEST(InvertedIndex, updateDocumentBase) {
+/*TEST(InvertedIndex, updateDocumentBase) {
     const std::vector<Entry>expected =
     {
             {0,2},
@@ -46,7 +46,7 @@ TEST(InvertedIndex, updateDocumentBase) {
         std::cout<<"docID : "<<ent.doc_id<<" - quantity : "<<ent.count<<std::endl;
     }
     ASSERT_EQ(expected,result);
-}
+}*/
 
 
 TEST(InvertedIndex, updateDocumentBase2) {

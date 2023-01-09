@@ -1,1 +1,13 @@
-{"config":{"max_responses":5,"name":"Gyr_searchEngine","version":"1.0"},"files":["File001.txt","File002.txt","File003.txt","File004.txt"]}
+{
+  "config":{
+    "max_responses":5,
+    "name":"Gyr_searchEngine",
+    "version":"1.0"
+  },
+  "files":[
+    "File001.txt",
+    "File002.txt",
+    "File003.txt",
+    "File004.txt"
+  ]
+}

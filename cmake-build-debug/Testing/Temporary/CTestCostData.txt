@@ -1,0 +1,16 @@
+ConverterJSON.readConfig 0 0
+ConverterJSON.getResponsesLimit 0 0
+ConverterJSON.getRequests 1 0.0591373
+ConverterJSON.getFiles 0 0
+ConverterJSON.putAnswers 2 0.0134341
+TestCaseInvertedIndex.TestBasic 2 0.00607928
+TestCaseInvertedIndex.TestBasic2 2 0.00471392
+TestCaseInvertedIndex.TestInvertedIndexMissingWord 2 0.0050768
+TestCaseSearchServer.TestSimple 0 0
+TestCaseSearchServer.TestTop5 0 0
+InvertedIndex.updateDocumentBase2 2 0.00523425
+---
+ConverterJSON.readConfig
+ConverterJSON.getResponsesLimit
+TestCaseSearchServer.TestSimple
+TestCaseSearchServer.TestTop5

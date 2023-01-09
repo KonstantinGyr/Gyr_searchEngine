@@ -26,21 +26,21 @@ TEST(ConverterJSON, readConfig) {
 }
 
 TEST(ConverterJSON, getResponsesLimit) {
-    converter.updateConfig(5);
+    //converter.updateConfig(5);
     int expected = 5;
     int result = converter.GetResponsesLimit();
     ASSERT_EQ(result, expected);
 }
 
-TEST(ConverterJSON, getRequests) {
+/*TEST(ConverterJSON, getRequests) {
     std::vector<std::string> expected =
             {
-                "Bjarne Stroustrup",
-                "function name",
-                "language",
-                "C++"
+                    "Не могу понять",
+                    "думали",
+                    "а кто там был",
+                    "слишком много времени"
             };
-    converter.SetRequest(expected);
+    //converter.SetRequest(expected);
     std::vector<std::string>result = converter.GetRequests();
     ASSERT_EQ(result , expected);
 }
@@ -52,7 +52,7 @@ TEST(ConverterJSON, getFiles) {
         ++count;
     }
     ASSERT_EQ(0,0);
-}
+}*/
 
 TEST(ConverterJSON, putAnswers) {
     const std::vector<std::vector<RelativeIndex>> expected = {

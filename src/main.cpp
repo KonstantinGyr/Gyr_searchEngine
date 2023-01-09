@@ -23,7 +23,7 @@ int main(int argc,char *argv[]) {
     catch (const std::invalid_argument &x) {
         std::cerr << x.what()<<std::endl;
     }
-    std::cout<<"Download txt documents in folder : "<< p.parent_path().string() + "\\resources" << std::endl;
+ /*   std::cout<<"Download txt documents in folder : "<< p.parent_path().string() + "\\resources" << std::endl;
     std::cout<<"How many responses per query :";
     int resp ;
     std::cin>>resp;
@@ -67,7 +67,7 @@ int main(int argc,char *argv[]) {
             std::cerr << x.what() << std::endl;
         }
         std::cout<<std::endl;
-    }
+    }*/
     InvertedIndex invertedIndex;
     try {
         invertedIndex.UpdateDocumentBase(converterJson.GetTextDocuments());

@@ -137,7 +137,7 @@ void ConverterJSON::SetRequest(std::vector<std::string>inVec){
     if(!file.is_open()){
         throw std::invalid_argument("method 'ConverterJSON::SetRequest' failed to open 'requests.json' file ");
     }
-    file<<requests;
+    file<<std::setw(4)<<requests<<std::endl;
     file.close();
 }
 
@@ -163,7 +163,7 @@ void ConverterJSON::putAnswers(const std::vector <std::vector< RelativeIndex>>&a
         }
         else if(answer.size() == 1){
             reqJSON["result"] = true;
-            reqJSON["docId"] = answer.front().doc_id;
+            reqJSON["docId"] = (answer.front().doc_id);
             reqJSON["rank"] = answer.front().rank;
         }
         else {
@@ -185,7 +185,7 @@ void ConverterJSON::putAnswers(const std::vector <std::vector< RelativeIndex>>&a
     if(!ans.is_open()){
         throw std::invalid_argument("method 'ConverterJSON::putAnswers' failed to open 'answers.json' file ");
     }
-    ans << mainJSON;
+    ans << std::setw(4) << mainJSON << std::endl;
     ans.close();
  }
 
@@ -200,24 +200,7 @@ void ConverterJSON::printAnswers()const {
     }
     file>>answers;
     file.close();
-    size_t count = 1;
-    for(const auto &req:answers["answers"]){
-        std::cout<<"request "<<numReq(count)<<std::endl;
-        if(req.count("relevance")) {
-            std::cout<<"  relevance : "<< std::endl;
-            for (const auto &ans: req["relevance"]){
-                std::cout<<"      docId : "<<ans["docId"]<<", "<<"rank : "<<ans["rank"]<<", "<<std::endl;
-            }
-        }else{
-            if(req["result"] == true){
-                std::cout << "    docId : "<<req["docId"]<<", "<<"rank : "<<req["rank"]<<", "<<std::endl;
-            }else{
-                std::cout << "    Documents not found" << std::endl;
-            }
-        }
-        count++;
-    }
-
+    std::cout<<answers.dump(4)<<std::endl;
 }
 
 
