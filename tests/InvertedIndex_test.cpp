@@ -13,40 +13,28 @@ void sort(std::vector<Entry>&inVec){
     }
 }
 
-std::string pt (){
-    std::string p = std::filesystem::current_path().string();
-    while (true){
-        if( p.back() != '\\'){
-            p.pop_back();
-        }
-        else{
-            p.pop_back();
-            break;
-        }
-    }
-    return p;
-}
+std::filesystem::path testPt(std::filesystem::current_path().parent_path()) ;
 
 InvertedIndex ind;
-ConverterJSON conv(pt());
+ConverterJSON conv(testPt);
 
-/*TEST(InvertedIndex, updateDocumentBase) {
+TEST(InvertedIndex, updateDocumentBase)
+{
     const std::vector<Entry>expected =
     {
-            {0,2},
-            {1,1},
-            {2,5},
-            {3,3},
-            {4,3}
+            {0,4},
+            {1,2},
+            {2,1},
+            {3,2}
     };
     ind.UpdateDocumentBase(conv.GetTextDocuments());
-    std::vector<Entry> result = ind.GetWordCount("the");
+    std::vector<Entry> result = ind.GetWordCount(conv.GetRequests()[1]);
     if(result.size()>1)sort(result);
     for(auto &ent:result){
         std::cout<<"docID : "<<ent.doc_id<<" - quantity : "<<ent.count<<std::endl;
     }
     ASSERT_EQ(expected,result);
-}*/
+}
 
 
 TEST(InvertedIndex, updateDocumentBase2) {

@@ -9,13 +9,13 @@
 #include "nlohmann/json.hpp"
 
 class ConverterJSON {
-    const std::string mainPath;
+    const std::filesystem::path mainPath;
     std::string name;
     std::string version;
     int maxResponses ;
 public:
     ConverterJSON() = default;
-    ConverterJSON(std::string _path):mainPath(_path) {} ;
+    ConverterJSON(std::filesystem::path _path):mainPath(_path) {} ;
 
     void updateConfig(int n);
 

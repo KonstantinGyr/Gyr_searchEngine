@@ -1,28 +1,39 @@
 {
     "answers": {
         "request 001": {
+            "docId": 0,
+            "rank": 1.0,
+            "result": true
+        },
+        "request 002": {
             "relevance": [
                 {
-                    "docId": 7,
-                    "rank": 1.0
-                },
-                {
-                    "docId": 14,
-                    "rank": 1.0
-                },
-                {
                     "docId": 0,
-                    "rank": 0.6666666865348816
+                    "rank": 1.0
                 },
                 {
                     "docId": 1,
-                    "rank": 0.6666666865348816
+                    "rank": 0.5
+                },
+                {
+                    "docId": 3,
+                    "rank": 0.5
                 },
                 {
                     "docId": 2,
-                    "rank": 0.6666666865348816
+                    "rank": 0.25
                 }
             ],
+            "result": true
+        },
+        "request 003": {
+            "docId": 0,
+            "rank": 1.0,
+            "result": true
+        },
+        "request 004": {
+            "docId": 0,
+            "rank": 1.0,
             "result": true
         }
     }

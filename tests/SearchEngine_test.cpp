@@ -16,19 +16,7 @@ void sortVec(vector<Entry>&inVec){
     }
 }
 
-string path (){
-    string p = std::filesystem::current_path().string();
-    while (true){
-       if( p.back() != '\\'){
-           p.pop_back();
-        }
-       else{
-           p.pop_back();
-           break;
-       }
-    }
-    return p;
-}
+std::filesystem::path testPt(std::filesystem::current_path().parent_path()) ;
 
 void TestInvertedIndexFunctionality(
         const vector<string>& docs,
@@ -120,7 +108,7 @@ TEST(TestCaseSearchServer, TestSimple) {
     InvertedIndex idx;
     idx.UpdateDocumentBase(docs);
     SearchServer srv(idx);
-    ConverterJSON conv(path());
+    ConverterJSON conv(testPt);
     std::vector<vector<RelativeIndex>> result = srv.search(request,conv.GetResponsesLimit());
     conv.putAnswers(result);
     ASSERT_EQ(result, expected);
@@ -163,7 +151,7 @@ TEST(TestCaseSearchServer, TestTop5) {
     InvertedIndex idx;
     idx.UpdateDocumentBase(docs);
     SearchServer srv(idx);
-    ConverterJSON conv(path());
+    ConverterJSON conv(testPt);
     std::vector<vector<RelativeIndex>> result = srv.search(request,conv.GetResponsesLimit());
     conv.putAnswers(result);
     conv.printAnswers();
