@@ -1,47 +1,42 @@
 #include "ConverterJSON.h"
 using   path = std::filesystem::path;
-/**
- * Метод обновляет config.json
- */
-void ConverterJSON::updateConfig(int n){
-    nlohmann::json confFile;
-    path p = mainPath;
-    maxResponses = n;
-    confFile["config"]["name"] = "Gyr_searchEngine";
-    confFile["config"]["version"] = "1.0";
-    confFile["config"]["max_responses"] = maxResponses;
 
-    for(auto &item:std::filesystem::directory_iterator(p /= "resources")){
-        if(item.is_regular_file()&&item.path().extension().compare(".txt") == 0) {
-            confFile["files"].emplace_back(item.path().filename());
-        }
-    }
-    p = mainPath;
-    std::ofstream file(p /= "config.json");
-    file<<std::setw(4)<<confFile<<std::endl;
-    file.close();
-}
 /**
  *Метод проверяет configfile на валидность
  * @return название поискового движка и его версию
  */
-std::string ConverterJSON::nameSearchEngine() {
+std::string ConverterJSON::updateConfig() {
     path p = mainPath;
-    std::vector<std::string> files;
+    std::vector<std::string> filesVec;
     nlohmann::json config;
     if (!std::filesystem::exists(p /= "config.json")) {
-        throw std::invalid_argument("config file is missing");
+        throw std::invalid_argument("exception: non-existent config file path");
     }
     std::ifstream file(p );
+    if(!file.is_open()){
+        throw std::invalid_argument("exception: method 'ConverterJSON::nameSearchEngine' failed to open 'config.json' file ");
+    }
     file >> config;
-    if (config["config"] == nullptr) {
-        throw std::invalid_argument("config file is empty");
+    if (config["config"] == nullptr || config["config"].empty()) {
+        throw std::invalid_argument("exception: field \"config\" in 'config.json' is empty or does not exist");
+    }
+    if (config["config"]["name"] == nullptr || config["config"]["name"].empty()) {
+        throw std::invalid_argument("exception: field \"name\" in 'config.json' is empty or does not exist");
+    }
+    if (config["config"]["version"] == nullptr || config["config"]["version"].empty()) {
+        throw std::invalid_argument("exception: field \"version\" in 'config.json' is empty or does not exist");
+    }
+    if (config["config"]["max_responses"] == nullptr || config["config"]["max_responses"].empty()) {
+        throw std::invalid_argument("exception: field \"max_responses\" in 'config.json' is empty or does not exist");
     }
     name = config["config"]["name"];
     version =  config["config"]["version"];
     maxResponses = config["config"]["max_responses"];
+    if (config["files"] == nullptr || config["files"].empty()) {
+        throw std::invalid_argument("exception: field \"files\" in 'config.json' is empty or does not exist");
+    }
     for(const auto &address:config["files"]){
-        files.push_back(address);
+        filesVec.push_back(address);
     }
     file.close();
     return name + " V" += version;
@@ -57,7 +52,7 @@ std::vector<std::string>  ConverterJSON::GetTextDocuments()const {
     path p = mainPath;
     std::ifstream file(p /= "config.json");
     if(!file.is_open()){
-        throw std::invalid_argument("method 'ConverterJSON::GetTextDocuments' failed to open 'config.json' file ");
+        throw std::invalid_argument("exception: method 'ConverterJSON::GetTextDocuments' failed to open 'config.json' file ");
     }
     file >> config;
     file.close();
@@ -68,7 +63,7 @@ std::vector<std::string>  ConverterJSON::GetTextDocuments()const {
         p /= "resources";
         std::ifstream doc(p /= docName);
         if(!doc.is_open()){
-            throw std::invalid_argument("method 'ConverterJSON::GetTextDocuments' failed to open 'resources' folder ");
+            throw std::invalid_argument("exception: method 'ConverterJSON::GetTextDocuments' failed to open 'resources' folder ");
         }
         doc.seekg(0);
         while (!doc.eof()){
@@ -82,24 +77,7 @@ std::vector<std::string>  ConverterJSON::GetTextDocuments()const {
 
     return textDocuments;
 }
-/**
- * @return возвращает имена документов
- */
-std::vector<std::string> ConverterJSON::getNameDocuments()const {
-    std::vector<std::string>nameVec;
-    path p = mainPath;
-    nlohmann::json config;
-    std::ifstream file(p /= "config.json");
-    if(!file.is_open()){
-        throw std::invalid_argument("method 'ConverterJSON::getNameDocuments' failed to open 'config.json' file ");
-    }
-    file >> config;
-    file.close();
-    for(const auto &item:config["files"]){
-        nameVec.emplace_back(item);
-    }
-    return nameVec;
-}
+
 /**
 * Метод считывает поле max_responses для определения предельного
 */
@@ -108,7 +86,7 @@ int ConverterJSON::GetResponsesLimit()const {
     nlohmann::json config;
     std::ifstream file(p /= "config.json");
     if(!file.is_open()){
-        throw std::invalid_argument("method 'ConverterJSON::GetResponsesLimit' failed to open 'config.json' file ");
+        throw std::invalid_argument("exception: method 'ConverterJSON::GetResponsesLimit' failed to open 'config.json' file ");
     }
     file>>config;
     file.close();
@@ -123,32 +101,18 @@ std::vector<std::string> ConverterJSON::GetRequests()const  {
     nlohmann::json requests;
     std::ifstream file (p /= "requests.json");
     if(!file.is_open()){
-        throw std::invalid_argument("method 'ConverterJSON::GetRequests' failed to open 'requests.json' file ");
+        throw std::invalid_argument("exception: method 'ConverterJSON::GetRequests' failed to open 'requests.json' file ");
     }
     file>>requests;
+    if (requests["requests"] == nullptr || requests["requests"].empty()) {
+        throw std::invalid_argument("exception: field \"requests\" in 'requests.json' is empty or does not exist");
+    }
     file.close();
     std::vector<std::string>output;
     for(auto &words:requests["requests"]){
         output.push_back(words);
     }
     return output;
-}
-/**
- * Метод загрузки запросов в requests.json
- * @param inVec принимает вектор запросов из main
- */
-void ConverterJSON::SetRequest(std::vector<std::string>inVec){
-    path p = mainPath;
-    nlohmann::json requests;
-    for(auto &item:inVec){
-        requests["requests"].emplace_back(item);
-    }
-    std::ofstream file(p /=  "requests.json");
-    if(!file.is_open()){
-        throw std::invalid_argument("method 'ConverterJSON::SetRequest' failed to open 'requests.json' file ");
-    }
-    file<<std::setw(4)<<requests<<std::endl;
-    file.close();
 }
 
 auto numReq(size_t x){
@@ -194,7 +158,7 @@ void ConverterJSON::putAnswers(const std::vector <std::vector< RelativeIndex>>&a
     path p = mainPath;
     std::ofstream ans(p /= "answers.json");
     if(!ans.is_open()){
-        throw std::invalid_argument("method 'ConverterJSON::putAnswers' failed to open 'answers.json' file ");
+        throw std::invalid_argument("exception: method 'ConverterJSON::putAnswers' failed to open 'answers.json' file ");
     }
     ans << std::setw(4) << mainJSON << std::endl;
     ans.close();
@@ -208,7 +172,7 @@ void ConverterJSON::printAnswers()const {
     nlohmann::json answers;
     std::ifstream file(p /= "answers.json");
     if(!file.is_open()){
-        throw std::invalid_argument("method 'ConverterJSON::printAnswers' failed to open 'answers.json' file ");
+        throw std::invalid_argument("exception: method 'ConverterJSON::printAnswers' failed to open 'answers.json' file ");
     }
     file>>answers;
     file.close();

@@ -9,7 +9,7 @@ ConverterJSON converter(testPath);
 
 TEST(ConverterJSON, readConfig) {
     std::string str = "Gyr_searchEngine V1.0";
-    ASSERT_EQ(converter.nameSearchEngine(), str);
+    ASSERT_EQ(converter.updateConfig(), str);
 }
 
 TEST(ConverterJSON, getResponsesLimit) {

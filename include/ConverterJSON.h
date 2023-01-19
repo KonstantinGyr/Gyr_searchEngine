@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 #include "SearchServer.h"
 #include "nlohmann/json.hpp"
@@ -12,14 +13,12 @@ class ConverterJSON {
     const std::filesystem::path mainPath;
     std::string name;
     std::string version;
-    int maxResponses ;
+    int maxResponses;
 public:
     ConverterJSON() = default;
-    ConverterJSON(std::filesystem::path _path):mainPath(_path) {} ;
+    explicit ConverterJSON(std::filesystem::path _path):mainPath(std::move(_path)) {} ;
 
-    void updateConfig(int n);
-
-    std::string nameSearchEngine() ;
+    std::string updateConfig() ;
 
     std::vector<std::string>GetTextDocuments()const;
 
@@ -30,10 +29,6 @@ public:
     void putAnswers(const std::vector<std::vector<RelativeIndex>>&answers)const;
 
     void printAnswers()const;
-
-    void SetRequest(std::vector<std::string> inVec);
-
-    std::vector<std::string> getNameDocuments ()const;
 };
 
 #endif //SEARCHENGINE_CONVERTERJSON_H

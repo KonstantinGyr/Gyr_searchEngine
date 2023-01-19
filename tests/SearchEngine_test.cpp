@@ -1,4 +1,6 @@
 #include <filesystem>
+#include <iterator>
+#include <algorithm>
 #include "SearchServer.h"
 #include "ConverterJSON.h"
 #include "gtest/gtest.h"
@@ -6,17 +8,7 @@
 
 using namespace std;
 
-void sortVec(vector<Entry>&inVec){
-    for (int i = 0; i < inVec.size() - 1; i++) {
-        int min = i;
-        for (int j = i + 1; j < inVec.size(); j++) {
-            if (inVec[j].doc_id < inVec[min].doc_id)min = j;
-        }
-        swap(inVec[i], inVec[min]);
-    }
-}
-
-std::filesystem::path testPt(std::filesystem::current_path().parent_path()) ;
+std::filesystem::path Pt(std::filesystem::current_path().parent_path()) ;
 
 void TestInvertedIndexFunctionality(
         const vector<string>& docs,
@@ -29,7 +21,11 @@ void TestInvertedIndexFunctionality(
     idx.UpdateDocumentBase(docs);
     for(auto& request : requests) {
         std::vector<Entry> word_count = idx.GetWordCount(request);
-        if(word_count.size()>1)sortVec(word_count);
+        if(word_count.size()>1){
+            std::sort(word_count.begin(),word_count.end(),[](Entry e1,Entry e2 ){
+                return  e1.doc_id < e2.doc_id;
+            });
+        }
         result.push_back(word_count);
     }
 
@@ -108,7 +104,7 @@ TEST(TestCaseSearchServer, TestSimple) {
     InvertedIndex idx;
     idx.UpdateDocumentBase(docs);
     SearchServer srv(idx);
-    ConverterJSON conv(testPt);
+    ConverterJSON conv(Pt);
     std::vector<vector<RelativeIndex>> result = srv.search(request,conv.GetResponsesLimit());
     conv.putAnswers(result);
     ASSERT_EQ(result, expected);
@@ -151,7 +147,7 @@ TEST(TestCaseSearchServer, TestTop5) {
     InvertedIndex idx;
     idx.UpdateDocumentBase(docs);
     SearchServer srv(idx);
-    ConverterJSON conv(testPt);
+    ConverterJSON conv(Pt);
     std::vector<vector<RelativeIndex>> result = srv.search(request,conv.GetResponsesLimit());
     conv.putAnswers(result);
     conv.printAnswers();

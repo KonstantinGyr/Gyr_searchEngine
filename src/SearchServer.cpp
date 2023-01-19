@@ -81,16 +81,10 @@ auto SearchServer::creatVec(const std::vector<size_t> &listDocs,const std::vecto
             countRel += countInDoc(word, item);
         }
         absRelDocs.emplace_back(item, countRel);
-    }
-    for (int i = 0; i < absRelDocs.size(); ++i) {  //сортируем вектор по убыванию
-        int maxInd = i;
-        for (int j = i + 1; j < absRelDocs.size(); ++j) {
-            if (absRelDocs[j].second > absRelDocs[maxInd].second) {
-                maxInd = j;
-            }
-        }
-        std::swap(absRelDocs[i], absRelDocs[maxInd]);
-    }
+    }//сортируем по убыванию
+   std::sort(absRelDocs.begin(),absRelDocs.end(),[](std::pair<size_t,int>p1,std::pair<size_t,int>p2){
+      return p1.second > p2.second || (p1.second == p2.second && p1.first < p2.first);
+   });
     std::vector<RelativeIndex> indOneReq;//вектор документов с индексами релевантности
     for (const auto &item: absRelDocs) {
         RelativeIndex relativeIndex{};
