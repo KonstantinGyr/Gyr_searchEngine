@@ -152,4 +152,5 @@ TEST(TestCaseSearchServer, TestTop5) {
     conv.putAnswers(result);
     conv.printAnswers();
     ASSERT_EQ(result, expected);
+    std::cout<<"TestCaseSearchServer passed successfully !";
 }

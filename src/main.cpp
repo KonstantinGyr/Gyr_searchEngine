@@ -33,11 +33,6 @@ int main(int argc,char *argv[]) {
         std::cerr << x.what() << std::endl;
         return 0;
     }
-    try {
-        converterJson.printAnswers();
-    }catch (const std::invalid_argument &x) {
-        std::cerr << x.what() << std::endl;
-        return 0;
-    }
+    std:: cout <<"The search is over, the results are written to the file \"answers.json\".";
     return 0;
 }

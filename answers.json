@@ -1,29 +1,40 @@
 {
     "answers": {
         "request 001": {
+            "docId": 0,
+            "rank": 1.0,
+            "result": true
+        },
+        "request 002": {
             "relevance": [
                 {
-                    "docId": 2,
+                    "docId": 0,
                     "rank": 1.0
                 },
                 {
-                    "docId": 0,
-                    "rank": 0.699999988079071
+                    "docId": 1,
+                    "rank": 0.5
                 },
                 {
-                    "docId": 1,
-                    "rank": 0.30000001192092896
+                    "docId": 3,
+                    "rank": 0.5
+                },
+                {
+                    "docId": 2,
+                    "rank": 0.25
                 }
             ],
             "result": true
         },
-        "request 002": {
+        "request 003": {
             "docId": 0,
-            "rank": 0.7540000081062317,
+            "rank": 1.0,
             "result": true
         },
-        "request 003": {
-            "result": false
+        "request 004": {
+            "docId": 0,
+            "rank": 1.0,
+            "result": true
         }
     }
 }
