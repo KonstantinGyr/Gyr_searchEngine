@@ -157,8 +157,6 @@ void ConverterJSON::putAnswers(const std::vector <std::vector< RelativeIndex>>&a
     mainJSON["answers"] = answersJSON;
     path p = mainPath;
     std::ofstream ans(p /= "answers.json");
-    ans.setf(std::ios::fixed);
-    ans.precision(9);
     if(!ans.is_open()){
         throw std::invalid_argument("exception: method 'ConverterJSON::putAnswers' failed to open 'answers.json' file ");
     }
